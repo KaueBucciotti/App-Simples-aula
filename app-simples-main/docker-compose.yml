@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: fatec_user
+      POSTGRES_PASSWORD: fatec_password
+      POSTGRES_DB: todolist
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    build: ./backend
+    restart: always  # <-- Se a API cair, o Docker sobe ela de novo até o banco estar pronto.
+    environment:
+      DB_HOST: db
+    depends_on:
+      - db
+    ports:
+      - "3000:3000"
+
+  web:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
